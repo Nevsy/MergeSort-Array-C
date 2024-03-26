@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define CALCSIZE(x) (sizeof(x)/sizeof(x[0]))
 
@@ -29,9 +30,9 @@ int main(void) {
 
     int array[sizeOfArray];
 
-    printf("enter array: ");
+    printf("enter array: \n");
     for(int i = 0; i < sizeOfArray; i++) {
-      printf("%d: ", i);
+      printf("%d: ", i+1);
       fflush(stdout);
       scanf("%d", &array[i]);
     }
@@ -55,8 +56,6 @@ void mergeSort(int *array, int size) {
   int rightArr[size - mid];
   copy(array, leftArr, mid, 0);
   copy(array, rightArr, size - mid, mid);
-  // printArr(leftArr, mid);
-  // printArr(rightArr, size - mid);
 
   mergeSort(leftArr, mid);
   mergeSort(rightArr, size - mid);
@@ -74,7 +73,6 @@ void merge(int *orig, int origSize, int *left, int leftSize, int *right, int rig
   int origIndex = origSize - 1, leftIndex = leftSize - 1, rightIndex = rightSize - 1;
   for(int i = 0; i < origSize; i++) {
     if(leftIndex == -1){
-        //printf("leftIndex negative\n");
         for(int j = 0; j <= rightIndex; j++) {
           orig[origIndex] = right[rightIndex - j];
           origIndex--;
@@ -94,23 +92,26 @@ void merge(int *orig, int origSize, int *left, int leftSize, int *right, int rig
     if(left[leftIndex] > right[rightIndex]) {
       orig[origIndex] = left[leftIndex];
       leftIndex--;
-      //printf("left was bigger\n");
     }
     else if(left[leftIndex] < right[rightIndex]) {
       orig[origIndex] = right[rightIndex];
       rightIndex--;
     }
-    else {
+    else if(left[leftIndex] == right[rightIndex]) {
       orig[origIndex] = left[leftIndex];
-      orig[origIndex - 1] = left[leftIndex];
+      orig[origIndex - 1] = right[rightIndex];
       origIndex--;
+      leftIndex--;
+      rightIndex--;
     }
+    else {
+      fprintf(stderr, "ERROR in merge(): null pointer reference or index out of bounds\n");
+      fprintf(stderr, "left: %p, right: %p, leftIndex: %d, rightIndex: %d, leftSize: %d, rightSize: %d\n", (void*) left, (void*) right, leftIndex, rightIndex, leftSize, rightSize);
+      exit(EXIT_FAILURE);
+    }
+
     origIndex--;
   }
-
-  // printf("after merge: ");
-  // printArr(orig, origSize);
-  // printf("\n");
 }
 
 void printArr(int *array, int size) {
